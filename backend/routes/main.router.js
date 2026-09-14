@@ -4,9 +4,10 @@ const repoRouter = require("./repo.router");
 const issueRouter = require("./issue.router");
 
 const mainRouter = express.Router();
-
+const prRouter = require("./pr.router");
 const searchRouter = require("./search.router");
 router.use("/search", searchRouter);
+router.use("/pr", prRouter);
 mainRouter.use(userRouter);
 mainRouter.use(repoRouter);
 mainRouter.use(issueRouter);
