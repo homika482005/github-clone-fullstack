@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../../config";
 import IssueList from "../issue/IssueList";
-import CommitHistory from "./CommitHistory"; // NEW IMPORT
+import CommitHistory from "./CommitHistory"; 
+import PullRequestList from "../pr/PullRequestList"; // NEW IMPORT
 import "./repoDetail.css";
 
 const RepoDetail = () => {
@@ -14,11 +15,19 @@ const RepoDetail = () => {
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("code");
   const [starCount, setStarCount] = useState(0);
+  const [currentUserId, setCurrentUserId] = useState(null); // NEW STATE
 
   useEffect(() => {
     const fetchRepo = async () => {
       try {
         const token = localStorage.getItem("token");
+        
+        // NEW: Decode token to get current user ID for ownership checks
+        if (token) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          setCurrentUserId(payload.id);
+        }
+
         const response = await axios.get(`${API_URL}/api/repo/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -61,6 +70,9 @@ const RepoDetail = () => {
   if (loading) return <div className="repo-detail-container">Loading repository...</div>;
   if (error) return <div className="repo-detail-container">Error: {error}</div>;
   if (!repo) return <div className="repo-detail-container">Repository not found.</div>;
+
+  // NEW: Boolean to check if the logged-in user owns this repository
+  const isRepoOwner = currentUserId === repo.owner?._id;
 
   return (
     <div className="repo-detail-container">
@@ -105,6 +117,13 @@ const RepoDetail = () => {
           >
             Issues ({repo.issues?.length || 0})
           </div>
+          {/* NEW: Pull Requests Tab */}
+          <div 
+            className={`repo-nav-item ${activeTab === "prs" ? "active" : ""}`}
+            onClick={() => setActiveTab("prs")}
+          >
+            Pull Requests
+          </div>
         </div>
       </div>
 
@@ -125,6 +144,8 @@ const RepoDetail = () => {
 
       {activeTab === "commits" && <CommitHistory repoId={repo._id} />}
       {activeTab === "issues" && <IssueList repoId={repo._id} />}
+      {/* NEW: Pull Requests Component */}
+      {activeTab === "prs" && <PullRequestList repoId={repo._id} isRepoOwner={isRepoOwner} />}
     </div>
   );
 };
