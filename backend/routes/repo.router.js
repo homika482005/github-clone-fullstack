@@ -1,15 +1,24 @@
 const express = require("express");
-const repoController = require("../controllers/repoController");
+const router = express.Router();
+const {
+  createRepository,
+  getAllRepositories,
+  getRepositoryById,
+  deleteRepository,
+  toggleStar,
+  forkRepository,
+  getRepoCommits
+} = require("../controllers/repoController");
+const { authenticate } = require("../middleware/authMiddleware");
 
-const repoRouter = express.Router();
+router.use(authenticate);
 
-repoRouter.post("/repo/create", repoController.createRepository);
-repoRouter.get("/repo/all", repoController.getAllRepositories);
-repoRouter.get("/repo/:id", repoController.fetchRepositoryById);
-repoRouter.get("/repo/name/:name", repoController.fetchRepositoryByName);
-repoRouter.get("/repo/user/:userID", repoController.fetchRepositoriesForCurrentUser);
-repoRouter.put("/repo/update/:id", repoController.updateRepositoryById);
-repoRouter.delete("/repo/delete/:id", repoController.deleteRepositoryById);
-repoRouter.patch("/repo/toggle/:id", repoController.toggleVisibilityById);
+router.post("/create", createRepository);
+router.get("/all", getAllRepositories);
+router.get("/:id", getRepositoryById);
+router.delete("/:id", deleteRepository);
+router.put("/:id/star", toggleStar);
+router.post("/:id/fork", forkRepository);
+router.get("/:id/commits", getRepoCommits);
 
-module.exports = repoRouter;
+module.exports = router;
