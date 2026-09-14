@@ -8,6 +8,7 @@ import "./auth.css";
 
 import logo from "../../assets/github-mark-white.svg";
 import { Link } from "react-router-dom";
+import { API_URL } from "../../config";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ const Signup = () => {
 
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:3000/signup", {
+      const res = await axios.post(`${API_URL}/signup`, {
         email: email,
         password: password,
         username: username,
