@@ -6,6 +6,9 @@ const issueRouter = require("./issue.router");
 const mainRouter = express.Router();
 const prRouter = require("./pr.router");
 const searchRouter = require("./search.router");
+const notificationRouter = require("./notification.router");
+// ... existing routes ...
+router.use("/notification", notificationRouter);
 router.use("/search", searchRouter);
 router.use("/pr", prRouter);
 mainRouter.use(userRouter);
