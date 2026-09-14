@@ -1,0 +1,78 @@
+.search-page-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  display: flex;
+  gap: 30px;
+}
+
+.search-sidebar {
+  width: 250px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #ffffff;
+  overflow: hidden;
+  height: fit-content;
+}
+
+.search-nav-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #d0d7de;
+  display: flex;
+  justify-content: space-between;
+  color: #1a1a1a;
+  font-size: 14px;
+}
+
+.search-nav-item:last-child {
+  border-bottom: none;
+}
+
+.search-nav-item:hover {
+  background: #f6f8fa;
+}
+
+.search-nav-item.active {
+  border-left: 3px solid #0969da;
+  font-weight: 600;
+  background: #f6f8fa;
+}
+
+.search-results {
+  flex: 1;
+}
+
+.search-result-item {
+  padding: 20px 0;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.search-result-title {
+  color: #0969da;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 0 0 8px 0;
+}
+
+.search-result-title:hover {
+  text-decoration: underline;
+}
+
+.search-result-meta {
+  font-size: 14px;
+  color: #57606a;
+  margin: 0;
+}
+
+/* Navbar Search Input styling (goes in your navbar.css, but added here for the component) */
+.navbar-search-input {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #d0d7de;
+  background: #f6f8fa;
+  font-size: 14px;
+  width: 250px;
+}
