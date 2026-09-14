@@ -1,4 +1,117 @@
-nav {
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: #24292f;
+  color: #ffffff;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.navbar-logo img {
+  width: 32px;
+  height: 32px;
+  filter: invert(1); /* Makes your black GitHub logo white for the dark navbar */
+}
+
+.navbar-logo h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.navbar-logo:hover {
+  opacity: 0.8;
+}
+
+.navbar-search-form {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-search-input {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #57606a;
+  background: transparent;
+  color: #ffffff;
+  font-size: 14px;
+  width: 260px;
+  transition: width 0.2s, background 0.2s;
+}
+
+.navbar-search-input::placeholder {
+  color: #c9d1d9;
+}
+
+.navbar-search-input:focus {
+  background: #ffffff;
+  color: #24292f;
+  width: 320px;
+  outline: none;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.nav-link p {
+  margin: 0;
+}
+
+.nav-link:hover {
+  color: #c9d1d9;
+}
+
+.nav-logout-btn {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #57606a;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-logout-btn:hover {
+  background: #30363d;
+  border-color: #8b949e;
+}
+
+
+
+
+
+
+/* nav {
   display: flex;
   justify-content: space-between;
   padding-bottom: 10px;
@@ -27,4 +140,4 @@ nav p {
 nav h3:hover,
 nav p:hover {
   text-decoration: underline;
-}
+} */
