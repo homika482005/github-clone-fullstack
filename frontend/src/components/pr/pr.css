@@ -1,0 +1,57 @@
+.pr-container {
+  font-family: 'Inter', -apple-system, sans-serif;
+  margin-top: 20px;
+}
+
+.pr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.pr-status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+.status-open {
+  background-color: #dafbe1;
+  color: #1a7f37;
+}
+
+.status-merged {
+  background-color: #ddf4ff;
+  color: #0969da;
+  border: 1px solid #0969da;
+}
+
+.status-closed {
+  background-color: #f6f8fa;
+  color: #57606a;
+}
+
+.merge-btn {
+  background-color: #2da44e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.merge-btn:hover {
+  background-color: #2c974b;
+}
+
+.merge-btn:disabled {
+  background-color: #94d3a2;
+  cursor: not-allowed;
+}
