@@ -13,13 +13,12 @@ const CreateRepo = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      // Safely using the Vercel environment variable you set up!
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/repo/create`,
         { name, description, isPrivate },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      navigate("/"); // Redirect to dashboard on success
+      navigate("/"); 
     } catch (error) {
       console.error("Error creating repository:", error);
       alert("Failed to create repository. Please try again.");
