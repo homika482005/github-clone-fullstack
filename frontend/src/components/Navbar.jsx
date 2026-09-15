@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { io } from "socket.io-client";
-import { API_URL } from "../../config";
 import "./navbar.css";
+
+// FIX: Replaced the broken "../../config" import with Vite's environment variable
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
