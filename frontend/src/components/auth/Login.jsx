@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../authContext";
 
@@ -8,11 +8,11 @@ import "./auth.css";
 
 import logo from "../../assets/github-mark-white.svg";
 import { Link } from "react-router-dom";
-import { API_URL } from "../../config";
+
+// FIX: Use Vite's environment variable directly so it grabs your Render URL
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
-  
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,10 @@ const Login = () => {
 
     try {
       setLoading(true);
-      const res = await axios.post(`${API_URL}/login`, {
+      
+      // FIX: Ensure this matches your backend route (e.g., /api/users/login or /api/login)
+      // If your backend index.js has app.use("/api/users", userRouter), change this to `${API_URL}/api/users/login`
+      const res = await axios.post(`${API_URL}/api/users/login`, {
         email: email,
         password: password,
       });
@@ -36,8 +39,8 @@ const Login = () => {
 
       window.location.href = "/";
     } catch (err) {
-      console.error(err);
-      alert("Login Failed!");
+      console.error("Login error details:", err.response || err);
+      alert(err.response?.data?.message || "Login Failed! Please check your credentials or backend route.");
       setLoading(false);
     }
   };
