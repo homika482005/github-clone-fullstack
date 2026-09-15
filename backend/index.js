@@ -1,261 +1,67 @@
 const express = require("express");
-const dotenv = require("dotenv");
-const cors = require("cors");
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
+const cors = require("cors");
+const dotenv = require("dotenv");
 const http = require("http");
 const { Server } = require("socket.io");
-const mainRouter = require("./routes/main.router");
-
-const yargs = require("yargs");
-const { hideBin } = require("yargs/helpers");
-
-const { initRepo } = require("./controllers/init");
-const { addRepo } = require("./controllers/add");
-const { commitRepo } = require("./controllers/commit");
-const { pushRepo } = require("./controllers/push");
-const { pullRepo } = require("./controllers/pull");
-const { revertRepo } = require("./controllers/revert");
 
 dotenv.config();
 
-yargs(hideBin(process.argv))
-  .command("start", "Starts a new server", {}, startServer)
-  .command("init", "Initialise a new repository", {}, initRepo)
-  .command(
-    "add <file>",
-    "Add a file to the repository",
-    (yargs) => {
-      yargs.positional("file", { 
-        describe: "File to add to the staging area",
-        type: "string",
-      });
-    },
-    (argv) => { addRepo(argv.file); }
-  )
-  .command(
-    "commit <message>",
-    "Commit the staged files",
-    (yargs) => {
-      yargs.positional("message", {
-        describe: "Commit message",
-        type: "string",
-      });
-    },
-    (argv) => { commitRepo(argv.message); }
-  )
-  .command("push", "Push commits to S3", {}, pushRepo)
-  .command("pull", "Pull commits from S3", {}, pullRepo)
-  .command(
-    "revert <commitID>",
-    "Revert to a specific commit",
-    (yargs) => {
-      yargs.positional("commitID", {
-        describe: "Comit ID to revert to",  
-        type: "string",
-      });
-    },
-    (argv) => { revertRepo(argv.commitID); }
-  )
-  .demandCommand(1, "You need at least one command")
-  .help().argv;
+const app = express();
+const server = http.createServer(app);
 
-function startServer() {
-  const app = express();
-  const port = process.env.PORT || 3000; 
+// Socket.io setup for real-time notifications
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Allows your Vercel frontend to connect
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  },
+});
 
-  app.use(bodyParser.json());
-  app.use(express.json());  
-  app.use(cors({ origin: "*" }));
+// Middleware
+app.use(express.json());
+app.use(cors());
 
-  const mongoURI = process.env.MONGODB_URI;
-  mongoose
-    .connect(mongoURI)
-    .then(() => console.log("MongoDB connected!"))
-    .catch((err) => console.error("Unable to connect : ", err));
+// Make Socket.io accessible to your routers
+app.set("io", io);
 
-  const httpServer = http.createServer(app);
-  
-  // Initialize Socket.IO
-  const io = new Server(httpServer, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST", "PUT", "DELETE"],
-    },
+// Routers
+const userRouter = require("./routes/user.router");
+const repoRouter = require("./routes/repo.router");
+const notificationRouter = require("./routes/notification.router");
+// Note: Ensure these file names match EXACTLY what is in your /routes folder.
+// If you have a pr.router.js or issue.router.js, add them here too.
+
+app.use("/api/users", userRouter);
+app.use("/api/repo", repoRouter);
+app.use("/api/notifications", notificationRouter);
+
+// Socket.io Connection Logging
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
   });
+});
 
-  // Attach io to the request object so controllers can emit events
-  app.use((req, res, next) => {
-    req.io = io;
-    next();
-  });
+// Database Connection and Server Start
+// CRITICAL FIX: process.env.PORT is strictly required by Render
+const PORT = process.env.PORT || 8080;
+const MONGODB_URI = process.env.MONGODB_URI;
 
-  // Mount API Routes AFTER injecting io
-  app.use("/", mainRouter);
-
-  // WebSocket Connection Logic
-  io.on("connection", (socket) => {
-    socket.on("joinRoom", (userID) => {
-      socket.join(userID);
-      console.log(`User ${userID} joined their notification room`);
-    });
-  });  
-
-  httpServer.listen(port, () => {
-    console.log(`Server is running on PORT ${port}`);
-  });
+if (!MONGODB_URI) {
+  console.error("FATAL ERROR: MONGODB_URI is not defined in environment variables.");
+  process.exit(1);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const express = require("express");
-// const dotenv = require("dotenv");
-// const cors = require("cors");
-// const mongoose = require("mongoose");
-// const bodyParser = require("body-parser");
-// const http = require("http");
-// const { Server } = require("socket.io");
-// const mainRouter = require("./routes/main.router");
-
-// const yargs = require("yargs");
-// const { hideBin } = require("yargs/helpers");
-
-// const { initRepo} = require("./controllers/init");
-// const { addRepo } = require("./controllers/add");
-// const { commitRepo } = require("./controllers/commit");
-// const { pushRepo } = require("./controllers/push");
-// const { pullRepo } = require("./controllers/pull");
-// const { revertRepo } = require("./controllers/revert");
-
-// dotenv.config();
-
-// yargs(hideBin(process.argv))
-//   .command("start", "Starts a new server", {}, startServer)
-//   .command("init", "Initialise a new repository", {}, initRepo)
-//   .command(
-//     "add <file>",
-//     "Add a file to the repository",
-//     (yargs) => {
-//       yargs.positional("file", { 
-//         describe: "File to add to the staging area",
-//         type: "string",
-//       });
-//     },
-//     (argv) => {
-//       addRepo(argv.file);
-//     }
-//   )
-//   .command(
-//     "commit <message>",
-//     "Commit the staged files",
-//     (yargs) => {
-//       yargs.positional("message", {
-//         describe: "Commit message",
-//         type: "string",
-//       });
-//     },
-//     (argv) => {
-//       commitRepo(argv.message);
-//     }
-//   )
-//   .command("push", "Push commits to S3", {}, pushRepo)
-//   .command("pull", "Pull commits from S3", {}, pullRepo)
-//   .command(
-//     "revert <commitID>",
-//     "Revert to a specific commit",
-//     (yargs) => {
-//       yargs.positional("commitID", {
-//         describe: "Comit ID to revert to",  
-//         type: "string",
-//       });
-//     },
-//     (argv) => {
-//       revertRepo(argv.commitID);
-//     }
-//   )
-//   .demandCommand(1, "You need at least one command")
-//   .help().argv;
-
-// function startServer() {
-//   const app = express();
-//   const port = process.env.PORT || 3000; 
-
-//   app.use(bodyParser.json());
-//   app.use(express.json());  
-
-//   const mongoURI = process.env.MONGODB_URI;
-
-//   mongoose
-//     .connect(mongoURI)
-//     .then(() => console.log("MongoDB connected!"))
-//     .catch((err) => console.error("Unable to connect : ", err));
-
-//   app.use(cors({ origin: "*" }));
-
-//   app.use("/", mainRouter);
-
-//   let user = "test";
-//   const httpServer = http.createServer(app);
-//   const io = new Server(httpServer, {
-//     cors: {
-//       origin: "*",
-//       methods: ["GET", "POST"],
-//     },
-//   });
-
-//   io.on("connection", (socket) => {
-//     socket.on("joinRoom", (userID) => {
-//       user = userID;
-//       console.log("=====");
-//       console.log(user);
-//       console.log("=====");
-//       socket.join(userID);
-//     });
-//   });  
-
-//   const db = mongoose.connection;
-
-//   db.once("open", async () => {
-//     console.log("CRUD operations called");
-//     // CRUD operations
-//   }); 
-
-
-//   httpServer.listen(port, () => {
-//     console.log(`Server is running on PORT ${port}`);
-//   });
-// }
-
-
-  
-
-
- 
-
-
-
-
- 
+mongoose
+  .connect(MONGODB_URI)
+  .then(() => {
+    console.log("Successfully connected to MongoDB");
+    server.listen(PORT, () => {
+      console.log(`Server is running and listening on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Database connection failed:", err);
+  });
