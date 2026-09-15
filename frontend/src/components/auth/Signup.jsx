@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../authContext";
 
@@ -8,7 +8,9 @@ import "./auth.css";
 
 import logo from "../../assets/github-mark-white.svg";
 import { Link } from "react-router-dom";
-import { API_URL } from "../../config";
+
+// FIX: Directly use Vite's environment variable to guarantee connection to Render
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -23,7 +25,9 @@ const Signup = () => {
 
     try {
       setLoading(true);
-      const res = await axios.post(`${API_URL}/signup`, {
+      
+      // FIX: Adjust this path if your backend uses /api/users/signup or /api/auth/signup
+      const res = await axios.post(`${API_URL}/api/users/signup`, {
         email: email,
         password: password,
         username: username,
@@ -37,8 +41,8 @@ const Signup = () => {
 
       window.location.href = "/";
     } catch (err) {
-      console.error(err);
-      alert("Signup Failed!");
+      console.error("Signup error details:", err.response || err);
+      alert(err.response?.data?.message || "Signup Failed! Please check your details or backend endpoint.");
       setLoading(false);
     }
   };
