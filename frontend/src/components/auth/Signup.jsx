@@ -7,9 +7,8 @@ import { Box, Button } from "@primer/react";
 import "./auth.css";
 
 import logo from "../../assets/github-mark-white.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-// FIX: Directly use Vite's environment variable to guarantee connection to Render
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Signup = () => {
@@ -17,32 +16,39 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
   const { setCurrentUser } = useAuth();
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
+    let res;
     try {
-      setLoading(true);
-      
-      // FIX: Adjust this path if your backend uses /api/users/signup or /api/auth/signup
-      const res = await axios.post(`${API_URL}/api/users/signup`, {
-        email: email,
-        password: password,
-        username: username,
-      });
+      // Automatically tries the 3 most common backend signup routes
+      try {
+        res = await axios.post(`${API_URL}/signup`, { email, password, username });
+      } catch (e1) {
+        try {
+          res = await axios.post(`${API_URL}/api/signup`, { email, password, username });
+        } catch (e2) {
+          res = await axios.post(`${API_URL}/api/users/signup`, { email, password, username });
+        }
+      }
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userId", res.data.userId);
-
-      setCurrentUser(res.data.userId);
-      setLoading(false);
-
-      window.location.href = "/";
+      if (res && res.data) {
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userId", res.data.userId);
+        if (setCurrentUser) setCurrentUser(res.data.userId);
+        
+        setLoading(false);
+        navigate("/");
+      } else {
+        throw new Error("No response data received from server.");
+      }
     } catch (err) {
       console.error("Signup error details:", err.response || err);
-      alert(err.response?.data?.message || "Signup Failed! Please check your details or backend endpoint.");
+      alert(err.response?.data?.message || "Signup Failed! Check if your backend is running on Render.");
       setLoading(false);
     }
   };
