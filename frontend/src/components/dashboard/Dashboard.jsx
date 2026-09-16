@@ -27,7 +27,8 @@ const Dashboard = () => {
     const fetchRepositories = async () => {
       if (!userId) return;
       try {
-        const response = await fetch(`${API_URL}/repo/user/${userId}`, {
+        // FIX: Changed from /repo/... to /api/repo/...
+        const response = await fetch(`${API_URL}/api/repo/user/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await response.json();
@@ -39,7 +40,8 @@ const Dashboard = () => {
 
     const fetchSuggestedRepositories = async () => {
       try {
-        const response = await fetch(`${API_URL}/repo/all`);
+        // FIX: Changed from /repo/all to /api/repo/all
+        const response = await fetch(`${API_URL}/api/repo/all`);
         const data = await response.json();
         setSuggestedRepositories(Array.isArray(data) ? data : data.repositories || []);
       } catch (err) {
