@@ -9,7 +9,6 @@ import "./auth.css";
 import logo from "../../assets/github-mark-white.svg";
 import { Link } from "react-router-dom";
 
-// FIX: Use Vite's environment variable directly so it grabs your Render URL
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
@@ -24,8 +23,6 @@ const Login = () => {
     try {
       setLoading(true);
       
-      // FIX: Ensure this matches your backend route (e.g., /api/users/login or /api/login)
-      // If your backend index.js has app.use("/api/users", userRouter), change this to `${API_URL}/api/users/login`
       const res = await axios.post(`${API_URL}/api/users/login`, {
         email: email,
         password: password,
@@ -61,6 +58,7 @@ const Login = () => {
             </PageHeader>
           </Box>
         </div>
+        
         <div className="login-box">
           <div>
             <label className="label">Email address</label>
@@ -95,7 +93,14 @@ const Login = () => {
           >
             {loading ? "Loading..." : "Login"}
           </Button>
+
+          {/* Disclaimer to prevent Chrome Phishing Warnings */}
+          <p style={{ fontSize: "12px", color: "#57606a", textAlign: "center", marginTop: "20px", lineHeight: "1.5" }}>
+            This is an educational clone project for portfolio demonstration purposes. <br/>
+            <strong>Do not enter your real GitHub password.</strong>
+          </p>
         </div>
+        
         <div className="pass-box">
           <p>
             New to GitHub? <Link to="/signup">Create an account</Link>
